@@ -1,0 +1,155 @@
+<div class="container page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow"><app-icon nome="grafico" [tamanho]="14" /> Painel de impacto</span>
+      <h1>O que a rede já conquistou</h1>
+      <p>Relatórios gerados sob demanda por uma função <strong>AWS Lambda</strong> exposta no <strong>API Gateway</strong>, com consultas JOIN/GROUP BY no RDS.</p>
+    </div>
+    <div class="row">
+      <select class="select" style="width: 150px" [ngModel]="uf()" (ngModelChange)="uf.set($event); carregar()" aria-label="Filtrar por UF">
+        <option value="">Brasil todo</option>
+        @for (u of ufs; track u) { <option [value]="u">{{ u }}</option> }
+      </select>
+      <button class="btn btn-icon" (click)="carregar()" [disabled]="carregando()" aria-label="Atualizar">
+        @if (carregando()) { <span class="spinner"></span> } @else { <app-icon nome="atualizar" [tamanho]="18" /> }
+      </button>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <div class="alert alert-erro">
+      <app-icon nome="alerta" />
+      <span><strong>{{ erro() }}</strong><br>Confira se a Lambda <code>doaperto-relatorios</code> está publicada e se <code>relatoriosBaseUrl</code> em <code>config.json</code> aponta para o API Gateway.</span>
+    </div>
+  } @else {
+    <section class="kpis">
+      <div class="card kpi-card destaque">
+        <span class="kpi-icone"><app-icon nome="caixa" /></span>
+        <div class="kpi"><span class="kpi-valor">{{ resumo() ? (resumo()!.itens_entregues | number) : '—' }}</span><span class="kpi-rotulo">itens entregues</span></div>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-icone"><app-icon nome="coracao" /></span>
+        <div class="kpi"><span class="kpi-valor">{{ resumo()?.doacoes_entregues ?? '—' }}</span><span class="kpi-rotulo">doações concluídas · {{ resumo()?.doacoes_em_andamento ?? 0 }} em andamento</span></div>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-icone"><app-icon nome="predio" /></span>
+        <div class="kpi"><span class="kpi-valor">{{ resumo()?.ongs ?? '—' }}</span><span class="kpi-rotulo">ONGs em {{ resumo()?.cidades_atendidas ?? 0 }} cidades</span></div>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-icone"><app-icon nome="pin" /></span>
+        <div class="kpi"><span class="kpi-valor">{{ resumo()?.distancia_media_km != null ? (resumo()!.distancia_media_km | number: '1.0-1') : '—' }}<small> km</small></span><span class="kpi-rotulo">distância média doador → ONG</span></div>
+      </div>
+    </section>
+
+    <div class="grid painel mt-3">
+      <section class="card card-lg">
+        <div class="card-title">
+          <div>
+            <h3>Doações por mês</h3>
+            <span class="small muted">Últimos 12 meses · {{ totalMensal() }} doações (exceto canceladas)</span>
+          </div>
+          <div class="segmented">
+            <button [class.ativo]="!verTabela()" (click)="verTabela.set(false)"><app-icon nome="grafico" [tamanho]="14" /> Gráfico</button>
+            <button [class.ativo]="verTabela()" (click)="verTabela.set(true)"><app-icon nome="tabela" [tamanho]="14" /> Tabela</button>
+          </div>
+        </div>
+        @if (mensal(); as m) {
+          @if (verTabela()) {
+            <div class="table-wrap">
+              <table class="table small">
+                <thead><tr><th>Mês</th>@for (s of seriesMensais(); track s.nome) { <th class="num">{{ s.nome }}</th> }<th class="num">Total</th></tr></thead>
+                <tbody>
+                  @for (r of rotulosMeses(); track $index; let i = $index) {
+                    <tr><td>{{ r }}</td>@for (s of seriesMensais(); track s.nome) { <td class="num">{{ s.valores[i] }}</td> }<td class="num strong">{{ m.totais[i] }}</td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <app-colunas-empilhadas [rotulos]="rotulosMeses()" [series]="seriesMensais()" />
+          }
+        } @else {
+          <div class="skeleton" style="height: 260px"></div>
+        }
+      </section>
+
+      <section class="card card-lg">
+        <div class="card-title">
+          <div>
+            <h3>Atendimento por categoria</h3>
+            <span class="small muted">Itens recebidos ÷ itens pedidos</span>
+          </div>
+        </div>
+        <div class="stack">
+          @for (c of categorias(); track c.categoria) {
+            <div class="cat-linha" [title]="c.quantidade_recebida + ' de ' + c.quantidade_solicitada + ' itens'">
+              <app-cat-icon [categoria]="c.categoria" [tamanho]="34" />
+              <div class="grow">
+                <div class="row-between small">
+                  <strong>{{ cats[c.categoria].rotulo }}</strong>
+                  <span><strong>{{ percentual(c) | number: '1.0-0' }}%</strong>
+                    <span class="muted"> · {{ c.abertas }} abertas@if (c.urgentes) {, <span class="urg">{{ c.urgentes }} urgentes</span>}</span></span>
+                </div>
+                <div class="barra"><span [style.width.%]="percentual(c)" [style.background]="cats[c.categoria].cor"></span></div>
+              </div>
+            </div>
+          } @empty {
+            @if (!carregando()) { <p class="muted">Sem necessidades cadastradas.</p> }
+          }
+        </div>
+      </section>
+    </div>
+
+    <div class="grid painel-2 mt-3">
+      <section class="card card-lg">
+        <div class="card-title"><h3>ONGs que mais receberam</h3><span class="small muted">itens entregues</span></div>
+        <div class="table-wrap" style="border:0">
+          <table class="table">
+            <thead><tr><th>#</th><th>ONG</th><th style="width: 40%">Itens recebidos</th><th class="num">% atendido</th><th class="num">Abertas</th></tr></thead>
+            <tbody>
+              @for (o of ranking(); track o.id; let i = $index) {
+                <tr>
+                  <td class="muted">{{ i + 1 }}</td>
+                  <td><a [routerLink]="['/ongs', o.id]" class="strong">{{ o.nome }}</a><div class="tiny muted">{{ o.cidade }}/{{ o.uf }} · {{ o.doadores }} doadores</div></td>
+                  <td>
+                    <div class="row" style="gap:10px; flex-wrap:nowrap">
+                      <div class="barra grow"><span [style.width.%]="(100 * o.itens_recebidos) / maxItensOng()"></span></div>
+                      <span class="small strong num" style="min-width: 36px">{{ o.itens_recebidos | number }}</span>
+                    </div>
+                  </td>
+                  <td class="num">{{ o.percentual_atendido != null ? (o.percentual_atendido | number: '1.0-0') + '%' : '—' }}</td>
+                  <td class="num">{{ o.necessidades_abertas }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card card-lg">
+        <div class="card-title"><h3>Quem mais doou</h3><app-icon nome="estrela" class="muted" /></div>
+        <ol class="podio">
+          @for (d of doadores(); track d.id; let i = $index) {
+            <li>
+              <span class="posicao" [class.ouro]="i === 0">{{ i + 1 }}</span>
+              <div class="grow">
+                <strong>{{ d.nome }}</strong>
+                <div class="tiny muted">{{ d.cidade }}/{{ d.uf }} · ajudou {{ d.ongs_ajudadas }} {{ d.ongs_ajudadas === 1 ? 'ONG' : 'ONGs' }}</div>
+              </div>
+              <span class="badge badge-verde">{{ d.itens | number }} itens</span>
+            </li>
+          } @empty {
+            @if (!carregando()) { <p class="muted">Ainda sem entregas.</p> }
+          }
+        </ol>
+      </section>
+    </div>
+
+    @if (geradoEm()) {
+      <p class="rodape-tecnico tiny muted mt-3">
+        <app-icon nome="raio" [tamanho]="13" /> Gerado pela Lambda <code>doaperto-relatorios</code> em {{ geradoEm() | date: 'dd/MM/yyyy HH:mm:ss' }}
+        · endpoints <code>GET /relatorios/&#123;tipo&#125;</code>
+      </p>
+    }
+  }
+</div>

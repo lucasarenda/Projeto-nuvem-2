@@ -1,0 +1,10 @@
+titulo;categoria;quantidade;unidade;urgencia;descricao
+Arroz 5 kg;alimento;100;pacotes;alta;Arroz tipo 1 para cestas básicas
+Feijão carioca 1 kg;alimento;120;pacotes;alta;
+Leite em pó 400 g;alimento;60;latas;media;Para famílias com bebês
+Cobertor de casal;cobertor;40;unidades;alta;Inverno chegando
+Camiseta infantil;roupa;60;peças;media;Tamanhos 4 a 10
+Tênis infantil;calcado;30;pares;baixa;Numeração 28 a 34
+Kit de higiene;higiene;80;kits;media;Sabonete, escova e pasta de dente
+Quebra-cabeça;brinquedo;20;unidades;baixa;A partir de 6 anos
+Linha com erro proposital;esporte;5;unidades;baixa;Categoria inválida para mostrar a validação

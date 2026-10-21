@@ -1,0 +1,160 @@
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="container hero-grid">
+    <div class="hero-texto surgir">
+      <span class="pill"><span class="pulso"></span> Doação inteligente, perto de você</span>
+      <h1>Sua doação no lugar certo, <span class="destaque">pertinho de você.</span></h1>
+      <p class="lead">
+        ONGs publicam o que precisam. Você conta o que tem para doar. O DoaPerto encontra a instituição
+        mais próxima que precisa daquilo <em>agora</em>.
+      </p>
+      <div class="row">
+        <a routerLink="/doar" class="btn btn-accent btn-lg"><app-icon nome="coracao" /> Quero doar</a>
+        <a routerLink="/ongs/nova" class="btn btn-lg"><app-icon nome="predio" /> Sou uma ONG</a>
+      </div>
+      <ul class="garantias">
+        <li><app-icon nome="check" [tamanho]="16" [traco]="2.6" /> 100% gratuito</li>
+        <li><app-icon nome="check" [tamanho]="16" [traco]="2.6" /> Match por distância e urgência</li>
+        <li><app-icon nome="check" [tamanho]="16" [traco]="2.6" /> Sem cadastro complicado</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual surgir" style="animation-delay: .12s" aria-hidden="true">
+      <div class="match-card">
+        <div class="row-between">
+          <span class="badge badge-escuro"><app-icon nome="brilho" [tamanho]="13" /> Melhor match</span>
+          <span class="badge badge-verde"><app-icon nome="pin" [tamanho]="12" /> 2,6 km</span>
+        </div>
+        <div class="row mt-2">
+          <span class="avatar" style="--av: #f25c3c">CR</span>
+          <div>
+            <strong>Casa Abrigo Recomeço</strong>
+            <div class="small muted">Itaquera · São Paulo/SP</div>
+          </div>
+        </div>
+        <div class="mc-item mt-2">
+          <span class="cat-icon" style="--c: var(--cat-cobertor)"><app-icon nome="cama" [tamanho]="20" /></span>
+          <div class="grow">
+            <div class="row-between"><strong>Cobertores de casal</strong><span class="badge urg-ALTA badge-dot">Urgente</span></div>
+            <div class="progress mt-1"><span style="width: 20%"></span></div>
+            <div class="tiny muted mt-1">12 de 60 recebidos · faltam 48</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block mt-2" tabindex="-1">Doar para esta ONG <app-icon nome="seta-dir" [tamanho]="16" /></button>
+      </div>
+      <div class="flutuante f1"><app-icon nome="caminhao" [tamanho]="18" /> <span><b>+45 itens</b> entregues esta semana</span></div>
+      <div class="flutuante f2"><span class="cat-icon" style="--c: var(--cat-alimento); width: 30px; height: 30px; border-radius: 10px"><app-icon nome="talheres" [tamanho]="15" /></span> Arroz · faltam 75</div>
+      <div class="flutuante f3"><app-icon nome="coracao" [tamanho]="16" /> Ana doou 10 casacos</div>
+    </div>
+  </div>
+</section>
+
+<section class="container numeros">
+  <div class="numeros-grid">
+    <div class="kpi">
+      <span class="kpi-valor">{{ resumo()?.ongs ?? '—' }}</span>
+      <span class="kpi-rotulo">ONGs na rede</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ resumo()?.necessidades_abertas ?? '—' }}</span>
+      <span class="kpi-rotulo">necessidades abertas</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ resumo() ? (resumo()!.itens_entregues | number) : '—' }}</span>
+      <span class="kpi-rotulo">itens entregues</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ resumo()?.cidades_atendidas ?? '—' }}</span>
+      <span class="kpi-rotulo">cidades atendidas</span>
+    </div>
+  </div>
+</section>
+
+<section class="container secao">
+  <div class="secao-topo">
+    <span class="eyebrow">Como funciona</span>
+    <h2>Três passos entre a sua vontade de ajudar e quem precisa</h2>
+  </div>
+  <div class="grid grid-3">
+    @for (p of passos; track p.titulo; let i = $index) {
+      <div class="card card-lg passo">
+        <span class="passo-num">{{ i + 1 }}</span>
+        <span class="passo-icone"><app-icon [nome]="p.icone" [tamanho]="22" /></span>
+        <h3>{{ p.titulo }}</h3>
+        <p class="muted mb-0">{{ p.texto }}</p>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="container secao">
+  <div class="row-between secao-topo">
+    <div>
+      <span class="eyebrow">O que dá para doar</span>
+      <h2 class="mb-0">Escolha por onde começar</h2>
+    </div>
+  </div>
+  <div class="categorias">
+    @for (c of categorias; track c.chave) {
+      <a class="categoria card-hover" [routerLink]="['/doar']" [queryParams]="{ categoria: c.chave }">
+        <app-cat-icon [categoria]="c.chave" [tamanho]="52" />
+        <strong>{{ c.rotulo }}</strong>
+        <span class="tiny muted">{{ c.exemplos }}</span>
+      </a>
+    }
+  </div>
+</section>
+
+<section class="container secao">
+  <div class="row-between secao-topo">
+    <div>
+      <span class="eyebrow" style="color: var(--accent)"><app-icon nome="alerta" [tamanho]="14" /> Precisando agora</span>
+      <h2 class="mb-0">Necessidades urgentes</h2>
+    </div>
+    <a routerLink="/necessidades" class="link-seta">Ver todas <app-icon nome="seta-dir" [tamanho]="16" /></a>
+  </div>
+
+  @if (urgentes(); as lista) {
+    @if (lista.length) {
+      <div class="grid grid-3">
+        @for (n of lista; track n.id) {
+          <article class="card card-hover urgente">
+            <div class="row row-nowrap">
+              <app-cat-icon [categoria]="n.categoria" />
+              <div class="grow">
+                <h4 class="mb-0 truncate">{{ n.titulo }}</h4>
+                <a class="small muted" [routerLink]="['/ongs', n.ongId]">{{ n.ongNome }} · {{ n.ongCidade }}/{{ n.ongUf }}</a>
+              </div>
+              <app-urgencia [urgencia]="n.urgencia" />
+            </div>
+            <app-progresso class="mt-2" style="display:block" [recebido]="n.quantidadeRecebida" [total]="n.quantidade" [unidade]="n.unidade" [coral]="true" />
+            <a class="btn btn-sm mt-2" [routerLink]="['/doar']" [queryParams]="{ categoria: n.categoria }">
+              Quero ajudar <app-icon nome="seta-dir" [tamanho]="15" />
+            </a>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="alert alert-info"><app-icon nome="info" /> Nenhuma necessidade urgente agora — ou a API ainda não está configurada em <code>config.json</code>.</div>
+    }
+  } @else {
+    <div class="grid grid-3">
+      @for (i of [1, 2, 3]; track i) { <div class="skeleton" style="height: 170px"></div> }
+    </div>
+  }
+</section>
+
+<section class="container secao">
+  <div class="cta-ong">
+    <div>
+      <span class="eyebrow" style="color: var(--sun)">Para instituições</span>
+      <h2>Sua ONG precisa de doações?</h2>
+      <p>Cadastre a instituição, publique necessidades uma a uma ou importe uma planilha CSV inteira. A gente leva os doadores até você.</p>
+    </div>
+    <div class="row">
+      <a routerLink="/ongs/nova" class="btn btn-lg cta-btn"><app-icon nome="mais" /> Cadastrar ONG</a>
+      <a routerLink="/relatorios" class="btn btn-lg btn-ghost cta-ghost"><app-icon nome="grafico" /> Ver impacto</a>
+    </div>
+  </div>
+</section>

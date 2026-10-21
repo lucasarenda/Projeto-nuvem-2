@@ -1,0 +1,203 @@
+<div class="container page">
+  <a routerLink="/ongs" class="link-seta small mb-2" style="display:inline-flex"><app-icon nome="seta-esq" [tamanho]="15" /> Todas as ONGs</a>
+
+  @if (erro()) {
+    <div class="alert alert-erro mt-2"><app-icon nome="alerta" /> {{ erro() }}</div>
+  } @else if (ong(); as o) {
+    <section class="capa">
+      <div class="capa-fundo"></div>
+      <div class="capa-conteudo">
+        <label class="logo" [class.carregando]="enviandoLogo()" title="Trocar logo">
+          <input type="file" class="sr-only" accept="image/png,image/jpeg,image/webp" (change)="trocarLogo($event)" />
+          <app-avatar [nome]="o.nome" [url]="o.logoUrl" tamanho="lg" />
+          <span class="logo-editar">
+            @if (enviandoLogo()) { <span class="spinner" style="width:14px;height:14px"></span> } @else { <app-icon nome="imagem" [tamanho]="15" /> }
+          </span>
+        </label>
+        <div class="grow capa-info">
+          <h1>{{ o.nome }}</h1>
+          <div class="row small muted">
+            <span class="row" style="gap:5px"><app-icon nome="pin" [tamanho]="15" /> {{ o.endereco ? o.endereco + ' · ' : '' }}{{ o.cidade }}/{{ o.uf }}</span>
+            <a class="row" style="gap:5px" [href]="'mailto:' + o.email"><app-icon nome="email" [tamanho]="15" /> {{ o.email }}</a>
+            @if (o.telefone) { <span class="row" style="gap:5px"><app-icon nome="telefone" [tamanho]="15" /> {{ o.telefone }}</span> }
+            @if (o.cnpj) { <span>CNPJ {{ o.cnpj }}</span> }
+          </div>
+        </div>
+        <div class="row">
+          <a class="btn" [routerLink]="['/ongs', o.id, 'editar']"><app-icon nome="lapis" [tamanho]="16" /> Editar</a>
+          <button class="btn btn-danger btn-icon" (click)="excluir()" aria-label="Excluir ONG"><app-icon nome="lixeira" [tamanho]="17" /></button>
+        </div>
+      </div>
+      @if (o.descricao) { <p class="capa-desc">{{ o.descricao }}</p> }
+      <div class="capa-numeros">
+        <div class="kpi"><span class="kpi-valor">{{ abertas().length }}</span><span class="kpi-rotulo">necessidades abertas</span></div>
+        <div class="kpi"><span class="kpi-valor">{{ doacoes().length }}</span><span class="kpi-rotulo">doações recebidas</span></div>
+        <div class="kpi"><span class="kpi-valor">{{ itensRecebidos() | number }}</span><span class="kpi-rotulo">itens entregues</span></div>
+      </div>
+    </section>
+
+    <nav class="tabs mt-4" role="tablist">
+      <button role="tab" [class.ativo]="aba() === 'necessidades'" (click)="aba.set('necessidades')">
+        <app-icon nome="caixa" [tamanho]="16" /> Necessidades <span class="contador">{{ necessidades().length }}</span>
+      </button>
+      <button role="tab" [class.ativo]="aba() === 'doacoes'" (click)="aba.set('doacoes')">
+        <app-icon nome="coracao" [tamanho]="16" /> Doações <span class="contador">{{ doacoes().length }}</span>
+      </button>
+      <button role="tab" [class.ativo]="aba() === 'importar'" (click)="aba.set('importar')">
+        <app-icon nome="tabela" [tamanho]="16" /> Importar CSV
+      </button>
+      <button role="tab" [class.ativo]="aba() === 'arquivos'" (click)="aba.set('arquivos')">
+        <app-icon nome="imagem" [tamanho]="16" /> Fotos e documentos
+      </button>
+    </nav>
+
+    @switch (aba()) {
+      @case ('necessidades') {
+        <div class="row-between mb-2">
+          <p class="muted mb-0">O que a instituição precisa receber, das mais urgentes para as menos.</p>
+          <a class="btn btn-primary btn-sm" [routerLink]="['/necessidades/nova']" [queryParams]="{ ongId: o.id }">
+            <app-icon nome="mais" [tamanho]="16" /> Nova necessidade
+          </a>
+        </div>
+        @if (necessidades().length) {
+          <div class="grid grid-2">
+            @for (n of necessidades(); track n.id) {
+              <article class="card nec" [class.fechada]="n.status !== 'ABERTA'">
+                <div class="row row-nowrap">
+                  <app-cat-icon [categoria]="n.categoria" />
+                  <div class="grow">
+                    <div class="row" style="gap:8px">
+                      <h4 class="mb-0">{{ n.titulo }}</h4>
+                      @if (n.origem === 'CSV') { <span class="badge tiny" title="Importada por CSV via Lambda">CSV</span> }
+                    </div>
+                    @if (n.descricao) { <span class="small muted clamp-2">{{ n.descricao }}</span> }
+                  </div>
+                  @if (n.status === 'ABERTA') { <app-urgencia [urgencia]="n.urgencia" /> }
+                  @else { <span class="badge" [class.badge-verde]="n.status === 'ATENDIDA'">{{ statusNec[n.status] }}</span> }
+                </div>
+                <app-progresso class="mt-2" style="display:block" [recebido]="n.quantidadeRecebida" [total]="n.quantidade" [unidade]="n.unidade" />
+                <div class="row nec-acoes">
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/necessidades', n.id, 'editar']"><app-icon nome="lapis" [tamanho]="14" /> Editar</a>
+                  <button class="btn btn-ghost btn-sm" (click)="excluirNecessidade(n)"><app-icon nome="lixeira" [tamanho]="14" /> Excluir</button>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <app-vazio icone="caixa" titulo="Nenhuma necessidade publicada" texto="Publique o que a ONG precisa — uma a uma ou importando uma planilha CSV.">
+            <div class="row" style="justify-content:center">
+              <a class="btn btn-primary" [routerLink]="['/necessidades/nova']" [queryParams]="{ ongId: o.id }"><app-icon nome="mais" [tamanho]="16" /> Nova necessidade</a>
+              <button class="btn" (click)="aba.set('importar')"><app-icon nome="tabela" [tamanho]="16" /> Importar CSV</button>
+            </div>
+          </app-vazio>
+        }
+      }
+
+      @case ('doacoes') {
+        @if (doacoes().length) {
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Doador</th><th>Item</th><th class="num">Qtd.</th><th>Status</th><th class="num">Distância</th><th>Data</th></tr></thead>
+              <tbody>
+                @for (d of doacoes(); track d.id) {
+                  <tr>
+                    <td><strong>{{ d.doadorNome }}</strong></td>
+                    <td><div class="row" style="gap:10px"><app-cat-icon [categoria]="d.categoria" [tamanho]="32" /> <span>{{ d.necessidadeTitulo }}<br><span class="tiny muted">{{ d.descricao }}</span></span></div></td>
+                    <td class="num">{{ d.quantidade }} <span class="muted tiny">{{ d.unidade }}</span></td>
+                    <td><span class="badge" [class]="'badge ' + statusDoacao[d.status].classe">{{ statusDoacao[d.status].rotulo }}</span></td>
+                    <td class="num">{{ d.distanciaKm != null ? (d.distanciaKm | number: '1.0-1') + ' km' : '—' }}</td>
+                    <td class="nowrap muted">{{ d.criadoEm | date: 'dd/MM/yyyy' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <a routerLink="/doacoes" class="link-seta small mt-2" style="display:inline-flex">Gerenciar status das doações <app-icon nome="seta-dir" [tamanho]="15" /></a>
+        } @else {
+          <app-vazio icone="coracao" titulo="Ainda sem doações" texto="Quando um doador escolher esta ONG, a doação aparece aqui." />
+        }
+      }
+
+      @case ('importar') {
+        <div class="grid importar">
+          <div class="stack">
+            <label class="dropzone dz-csv" [class.arrastando]="arrastando()"
+                   (dragover)="$event.preventDefault(); arrastando.set(true)" (dragleave)="arrastando.set(false)" (drop)="soltarCsv($event)">
+              <input type="file" class="sr-only" accept=".csv,text/csv" (change)="escolherCsv($event)" />
+              <span class="dz-icon"><app-icon nome="tabela" [tamanho]="24" /></span>
+              @if (enviandoCsv() !== null) {
+                <strong>Enviando ao S3… {{ enviandoCsv() }}%</strong>
+                <div class="progress" style="width: 240px"><span [style.width.%]="enviandoCsv()"></span></div>
+              } @else {
+                <strong>Solte aqui sua planilha .csv</strong>
+                <span class="small">ou clique para escolher · separador vírgula ou ponto e vírgula</span>
+              }
+            </label>
+            <div class="card fluxo">
+              <span class="label">O que acontece</span>
+              <ol>
+                <li><app-icon nome="nuvem" [tamanho]="16" /><span>A API gera uma URL pré-assinada e o navegador envia o CSV direto ao <strong>S3</strong>.</span></li>
+                <li><app-icon nome="raio" [tamanho]="16" /><span>O S3 dispara a <strong>Lambda</strong>, que valida cada linha.</span></li>
+                <li><app-icon nome="escudo" [tamanho]="16" /><span>As necessidades válidas são gravadas no <strong>RDS</strong>.</span></li>
+              </ol>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <h3>Formato esperado</h3>
+              <button class="btn btn-sm" (click)="baixarModelo()"><app-icon nome="download" [tamanho]="15" /> Baixar modelo</button>
+            </div>
+            <div class="table-wrap">
+              <table class="table small">
+                <thead><tr><th>Coluna</th><th>Obrig.</th><th>Valores</th></tr></thead>
+                <tbody>
+                  <tr><td><code>titulo</code></td><td>sim</td><td class="muted">Até 150 caracteres</td></tr>
+                  <tr><td><code>categoria</code></td><td>sim</td><td class="muted">alimento, roupa, calcado, higiene, cobertor, brinquedo, outro</td></tr>
+                  <tr><td><code>quantidade</code></td><td>sim</td><td class="muted">Número maior que zero</td></tr>
+                  <tr><td><code>unidade</code></td><td>não</td><td class="muted">kg, pacotes, peças… (padrão: unidades)</td></tr>
+                  <tr><td><code>urgencia</code></td><td>não</td><td class="muted">baixa, media, alta (padrão: media)</td></tr>
+                  <tr><td><code>descricao</code></td><td>não</td><td class="muted">Texto livre</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="mt-4">Histórico de importações</h3>
+        @if (importacoes().length) {
+          <div class="stack-sm">
+            @for (i of importacoes(); track i.id) {
+              <details class="card importacao">
+                <summary class="row">
+                  <span class="cat-icon" [style.--c]="i.status === 'ERRO' ? 'var(--danger)' : i.status === 'CONCLUIDA' ? 'var(--primary)' : 'var(--warning)'" style="width:38px;height:38px">
+                    @if (i.status === 'AGUARDANDO_UPLOAD') { <span class="spinner" style="width:15px;height:15px"></span> }
+                    @else { <app-icon [nome]="i.status === 'ERRO' ? 'alerta' : 'check'" [tamanho]="18" /> }
+                  </span>
+                  <div class="grow">
+                    <strong class="truncate" style="display:block">{{ i.nomeArquivo }}</strong>
+                    <span class="tiny muted">{{ i.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  @if (i.status === 'AGUARDANDO_UPLOAD') { <span class="badge badge-sol">Processando…</span> }
+                  @else {
+                    <span class="badge badge-verde">{{ i.linhasImportadas ?? 0 }} importadas</span>
+                    @if (i.linhasComErro) { <span class="badge badge-coral">{{ i.linhasComErro }} com erro</span> }
+                  }
+                </summary>
+                @if (i.mensagens) { <pre class="mensagens">{{ i.mensagens }}</pre> }
+              </details>
+            }
+          </div>
+        } @else {
+          <p class="muted">Nenhuma importação ainda.</p>
+        }
+      }
+
+      @case ('arquivos') {
+        <p class="muted">Fotos do espaço, relatórios de prestação de contas, documentos… Imagens ganham miniatura automaticamente (Lambda).</p>
+        <app-anexos entidadeTipo="ONG" [entidadeId]="o.id" />
+      }
+    }
+  } @else {
+    <div class="skeleton" style="height: 260px; border-radius: 24px"></div>
+  }
+</div>

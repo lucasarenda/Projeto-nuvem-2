@@ -1,0 +1,28 @@
+.capa { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+.capa-fundo { height: 120px; background:
+  radial-gradient(circle at 15% 30%, rgba(255, 194, 74, .45), transparent 35%),
+  radial-gradient(circle at 80% 0%, rgba(242, 92, 60, .35), transparent 40%),
+  linear-gradient(120deg, var(--primary-700), var(--primary)); }
+.capa-conteudo { display: flex; align-items: flex-end; gap: 20px; padding: 0 28px; margin-top: -44px; flex-wrap: wrap; }
+.capa-info { padding-bottom: 4px; h1 { font-size: clamp(1.5rem, 3vw, 2.1rem); margin: 52px 0 8px; } .row { gap: 16px; } a { color: inherit; } }
+.capa-desc { padding: 16px 28px 0; margin: 0; color: var(--ink-2); max-width: 80ch; }
+.capa-numeros { display: flex; gap: 40px; padding: 20px 28px 24px; flex-wrap: wrap; .kpi-valor { font-size: 1.7rem; } }
+
+.logo { position: relative; cursor: pointer; border-radius: 26px; box-shadow: 0 0 0 5px var(--surface), var(--shadow); display: block; }
+.logo-editar { position: absolute; right: -6px; bottom: -6px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ink); color: #fff; box-shadow: 0 0 0 3px var(--surface); transition: transform .15s; }
+.logo:hover .logo-editar { transform: scale(1.1); }
+
+.nec { display: flex; flex-direction: column; }
+.nec.fechada { opacity: .72; }
+.nec-acoes { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); gap: 4px; }
+
+.importar { grid-template-columns: 1fr 1.2fr; }
+@media (max-width: 900px) { .importar { grid-template-columns: 1fr; } }
+.dz-csv { padding: 40px 24px; }
+.fluxo ol { list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 10px; font-size: .88rem; color: var(--ink-2); }
+.fluxo li { display: flex; gap: 10px; align-items: flex-start; app-icon { color: var(--primary); margin-top: 2px; } }
+
+.importacao { padding: 14px 18px; summary { list-style: none; cursor: pointer; } summary::-webkit-details-marker { display: none; } }
+.mensagens { margin: 12px 0 0; padding: 12px; border-radius: 10px; background: #fcfaf6; border: 1px solid var(--line); font-size: .8rem; white-space: pre-wrap; color: var(--ink-2); }
+code { font-size: .82rem; background: var(--bg-2); padding: 1px 6px; border-radius: 6px; }

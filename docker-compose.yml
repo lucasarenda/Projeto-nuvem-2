@@ -1,0 +1,36 @@
+# Ambiente local: PostgreSQL + API. Rode com:  docker compose --env-file .env up --build
+# (o front roda com "npm start" em frontend/, e os relatórios com lambdas/relatorios/servidor_local.py)
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-doaperto}
+      POSTGRES_USER: ${DB_USERNAME:-doaperto}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-doaperto}"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-doaperto}
+      DB_USERNAME: ${DB_USERNAME:-doaperto}
+      DB_PASSWORD: ${DB_PASSWORD}
+      S3_BUCKET: ${S3_BUCKET:-}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${HOME:-~}/.aws:/home/app/.aws:ro
+
+volumes:
+  pgdata:

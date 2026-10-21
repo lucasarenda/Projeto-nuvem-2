@@ -1,0 +1,59 @@
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="topo">
+  <div class="container topo-inner">
+    <a routerLink="/" class="marca" aria-label="DoaPerto, página inicial">
+      <span class="marca-icone"><app-icon nome="coracao" [tamanho]="18" [traco]="2.4" /></span>
+      <span>Doa<b>Perto</b></span>
+    </a>
+
+    <nav class="nav" [class.aberto]="menuAberto()" aria-label="Principal">
+      @for (l of links; track l.rota) {
+        <a [routerLink]="l.rota" routerLinkActive="ativo" class="nav-link">
+          <app-icon [nome]="l.icone" [tamanho]="17" />
+          {{ l.rotulo }}
+        </a>
+      }
+      <a routerLink="/doar" class="btn btn-accent btn-sm nav-cta">
+        <app-icon nome="coracao" [tamanho]="16" /> Quero doar
+      </a>
+    </nav>
+
+    <button class="btn btn-ghost btn-icon menu-btn" (click)="menuAberto.set(!menuAberto())"
+            [attr.aria-expanded]="menuAberto()" aria-label="Abrir menu">
+      <app-icon [nome]="menuAberto() ? 'x' : 'menu'" />
+    </button>
+  </div>
+</header>
+
+<main id="conteudo">
+  <router-outlet />
+</main>
+
+<footer class="rodape">
+  <div class="container rodape-inner">
+    <div class="stack-sm">
+      <a routerLink="/" class="marca">
+        <span class="marca-icone"><app-icon nome="coracao" [tamanho]="18" [traco]="2.4" /></span>
+        <span>Doa<b>Perto</b></span>
+      </a>
+      <p class="muted small mb-0">Ligando quem quer ajudar a quem precisa — pertinho de você.</p>
+    </div>
+    <div class="rodape-col">
+      <span class="label">Plataforma</span>
+      <a routerLink="/doar">Quero doar</a>
+      <a routerLink="/ongs">Encontrar ONGs</a>
+      <a routerLink="/ongs/nova">Cadastrar ONG</a>
+      <a routerLink="/relatorios">Painel de impacto</a>
+    </div>
+    <div class="rodape-col">
+      <span class="label">Nuvem</span>
+      <span class="muted small"><app-icon nome="nuvem" [tamanho]="14" /> API Spring Boot em container</span>
+      <span class="muted small"><app-icon nome="raio" [tamanho]="14" /> Lambdas: arquivos e relatórios</span>
+      <span class="muted small"><app-icon nome="escudo" [tamanho]="14" /> RDS PostgreSQL em subnet privada</span>
+    </div>
+  </div>
+  <div class="container rodape-base tiny muted">© {{ ano }} DoaPerto · Projeto acadêmico de Computação em Nuvem</div>
+</footer>
+
+<app-feedback />

@@ -1,0 +1,45 @@
+# CI (bônus): compila e testa as três partes a cada push/PR.
+# Não faz deploy automático porque as credenciais do Learner Lab expiram a cada sessão;
+# veja "CI/CD" no README para habilitar o deploy do front com secrets temporários.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '25', cache: maven }
+      - run: chmod +x mvnw && ./mvnw -B verify
+      - uses: actions/upload-artifact@v4
+        with: { name: doaperto-api, path: backend/target/doaperto-api.jar }
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24', cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npx ng test --watch=false
+      - run: npx ng build
+      - uses: actions/upload-artifact@v4
+        with: { name: frontend-dist, path: frontend/dist/frontend/browser }
+
+  lambdas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - run: python -m py_compile lambdas/processar-arquivo/lambda_function.py lambdas/relatorios/lambda_function.py
+      - run: bash lambdas/build.sh
+      - uses: actions/upload-artifact@v4
+        with: { name: lambdas, path: lambdas/build/*.zip }

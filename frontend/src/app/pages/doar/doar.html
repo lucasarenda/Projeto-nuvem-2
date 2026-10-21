@@ -1,0 +1,231 @@
+<div class="container page doar">
+  @if (passo() < 5) {
+    <div class="doar-topo">
+      <span class="eyebrow"><app-icon nome="coracao" [tamanho]="14" /> Quero doar</span>
+      <h1>Vamos encontrar quem precisa do que você tem</h1>
+    </div>
+
+    <ol class="etapas" aria-label="Etapas">
+      @for (e of etapas; track e; let i = $index) {
+        <li [class.feito]="passo() > i + 1" [class.atual]="passo() === i + 1">
+          <button type="button" (click)="irPara(i + 1)" [disabled]="passo() <= i + 1">
+            <span class="etapa-num">
+              @if (passo() > i + 1) { <app-icon nome="check" [tamanho]="14" [traco]="3" /> } @else { {{ i + 1 }} }
+            </span>
+            <span class="etapa-rotulo">{{ e }}</span>
+          </button>
+        </li>
+      }
+    </ol>
+  }
+
+  <div class="doar-grid" [class.unico]="passo() === 5">
+    <section class="card card-lg painel surgir" [attr.data-passo]="passo()">
+      @switch (passo()) {
+        @case (1) {
+          <h2>O que você vai doar?</h2>
+          <p class="muted">Escolha a categoria — é ela que usamos para achar a ONG certa.</p>
+          <div class="cats">
+            @for (c of categorias; track c.chave) {
+              <button type="button" class="cat" [class.ativo]="categoria() === c.chave" (click)="categoria.set(c.chave)"
+                      [attr.aria-pressed]="categoria() === c.chave">
+                <app-cat-icon [categoria]="c.chave" [tamanho]="40" />
+                <span>{{ c.rotulo }}</span>
+                @if (categoria() === c.chave) { <span class="cat-check"><app-icon nome="check" [tamanho]="12" [traco]="3" /></span> }
+              </button>
+            }
+          </div>
+          <div class="form-grid mt-3">
+            <div class="field col-4">
+              <label for="desc">Descreva os itens</label>
+              <input id="desc" class="input" [ngModel]="descricao()" (ngModelChange)="descricao.set($event)"
+                     [placeholder]="infoCategoria() ? 'Ex.: ' + infoCategoria()!.exemplos.split(',')[0] + ' em bom estado' : 'Ex.: 10 pacotes de arroz'" maxlength="500" />
+            </div>
+            <div class="field col-2">
+              <label for="qtd">Quantidade</label>
+              <input id="qtd" class="input" type="number" min="1" [ngModel]="quantidade()" (ngModelChange)="quantidade.set(+$event || 0)" />
+            </div>
+          </div>
+        }
+
+        @case (2) {
+          <h2>Onde você está?</h2>
+          <p class="muted">Usamos só para calcular a distância até as ONGs. Não mostramos sua localização a ninguém.</p>
+          <button type="button" class="local-btn" (click)="usarLocalizacao()" [disabled]="localizando()">
+            <span class="local-icone">
+              @if (localizando()) { <span class="spinner"></span> } @else { <app-icon nome="localizar" [tamanho]="22" /> }
+            </span>
+            <span class="grow">
+              <strong>Usar minha localização</strong>
+              <span class="small muted">Mais preciso — o navegador vai pedir permissão</span>
+            </span>
+            <app-icon nome="chevron-dir" />
+          </button>
+          <div class="ou"><span>ou escolha a cidade</span></div>
+          <select class="select" [ngModel]="cidadeEscolhida()" (ngModelChange)="escolherCidade($event)" aria-label="Cidade">
+            <option value="" disabled>Selecione sua cidade…</option>
+            @for (c of cidades; track c.nome) { <option [value]="c.nome + '/' + c.uf">{{ c.nome }} — {{ c.uf }}</option> }
+          </select>
+          @if (local(); as l) {
+            <div class="alert alert-info mt-2"><app-icon nome="pin" /> <span><strong>{{ l.rotulo }}</strong><br><span class="tiny">{{ l.lat }}, {{ l.lng }}</span></span></div>
+          }
+        }
+
+        @case (3) {
+          <div class="row-between">
+            <div>
+              <h2 class="mb-0">Para quem doar</h2>
+              <p class="muted mb-0">ONGs que precisam de <strong>{{ infoCategoria()?.rotulo?.toLowerCase() }}</strong>, da mais indicada para a menos.</p>
+            </div>
+            <button class="btn btn-sm btn-ghost" (click)="buscarSugestoes()"><app-icon nome="atualizar" [tamanho]="15" /> Atualizar</button>
+          </div>
+
+          @if (sugestoes(); as lista) {
+            @if (lista.length) {
+              <div class="sugestoes mt-3" role="radiogroup">
+                @for (s of lista; track s.necessidadeId) {
+                  <button type="button" class="sugestao" role="radio" [attr.aria-checked]="escolhida()?.necessidadeId === s.necessidadeId"
+                          [class.ativa]="escolhida()?.necessidadeId === s.necessidadeId" [class.melhor]="s.melhorMatch" (click)="escolhida.set(s)">
+                    @if (s.melhorMatch) { <span class="selo"><app-icon nome="brilho" [tamanho]="13" /> Melhor match</span> }
+                    <div class="row row-nowrap">
+                      <app-avatar [nome]="s.ongNome" [url]="s.ongLogoUrl" />
+                      <div class="grow" style="text-align:left">
+                        <strong class="truncate" style="display:block">{{ s.ongNome }}</strong>
+                        <span class="small muted">{{ s.ongCidade }}/{{ s.ongUf }}</span>
+                      </div>
+                      <span class="distancia"><strong>{{ s.distanciaKm | number: '1.0-1' }}</strong> km</span>
+                    </div>
+                    <div class="sug-item">
+                      <div class="row-between">
+                        <span class="strong">{{ s.titulo }}</span>
+                        <app-urgencia [urgencia]="s.urgencia" />
+                      </div>
+                      <app-progresso class="mt-1" style="display:block" [recebido]="s.quantidadeRecebida" [total]="s.quantidade" [unidade]="s.unidade" />
+                    </div>
+                    <span class="tiny muted motivo"><app-icon nome="info" [tamanho]="13" /> {{ s.motivo }}</span>
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="empty mt-3">
+                <div class="empty-icon"><app-icon nome="busca" [tamanho]="28" /></div>
+                <h3>Nenhuma ONG precisa disso agora</h3>
+                <p>Que tal tentar outra categoria? Ou volte mais tarde — novas necessidades chegam todos os dias.</p>
+                <button class="btn" (click)="irPara(1)"><app-icon nome="seta-esq" [tamanho]="16" /> Trocar categoria</button>
+              </div>
+            }
+          } @else {
+            <div class="sugestoes mt-3">
+              @for (i of [1, 2, 3]; track i) { <div class="skeleton" style="height: 168px"></div> }
+            </div>
+          }
+        }
+
+        @case (4) {
+          <h2>Quase lá! Quem está doando?</h2>
+          <p class="muted">Se você já doou antes, é só informar o mesmo e-mail.</p>
+          <div class="form-grid">
+            <div class="field col-6">
+              <label for="email">E-mail</label>
+              <div class="input-icon">
+                <app-icon nome="email" [tamanho]="18" />
+                <input id="email" class="input" type="email" autocomplete="email" [ngModel]="email()"
+                       (ngModelChange)="email.set($event); doadorExistente.set(null)" (blur)="verificarEmail()" placeholder="voce@email.com" />
+              </div>
+              @if (doadorExistente(); as d) { <span class="hint" style="color: var(--primary)">👋 Que bom te ver de novo, {{ d.nome.split(' ')[0] }}!</span> }
+            </div>
+            @if (!doadorExistente()) {
+              <div class="field col-3">
+                <label for="nome">Nome</label>
+                <input id="nome" class="input" autocomplete="name" [ngModel]="nome()" (ngModelChange)="nome.set($event)" />
+              </div>
+              <div class="field col-3">
+                <label for="tel">Telefone <span class="muted">(opcional)</span></label>
+                <input id="tel" class="input" autocomplete="tel" [ngModel]="telefone()" (ngModelChange)="telefone.set($event)" placeholder="(11) 90000-0000" />
+              </div>
+            }
+            <div class="field col-2">
+              <label for="qtd2">Quantidade</label>
+              <input id="qtd2" class="input" type="number" min="1" [ngModel]="quantidade()" (ngModelChange)="quantidade.set(+$event || 0)" />
+              @if (escolhida(); as s) { <span class="hint">A ONG ainda precisa de {{ s.faltam }} {{ s.unidade }}</span> }
+            </div>
+            <div class="field col-4">
+              <label for="desc2">Descrição</label>
+              <input id="desc2" class="input" [ngModel]="descricao()" (ngModelChange)="descricao.set($event)" />
+            </div>
+          </div>
+        }
+
+        @case (5) {
+          @if (doacao(); as d) {
+            <div class="sucesso">
+              <div class="sucesso-icone"><app-icon nome="check" [tamanho]="40" [traco]="3" /></div>
+              <h2>Obrigado, {{ d.doadorNome.split(' ')[0] }}! 💚</h2>
+              <p class="muted">Sua doação de <strong>{{ d.quantidade }} {{ d.unidade }}</strong> para <strong>{{ d.ongNome }}</strong> foi registrada.
+                @if (d.distanciaKm) { Ela fica a {{ d.distanciaKm | number: '1.0-1' }} km de você. }</p>
+              @if (escolhida()?.ongEndereco) {
+                <div class="alert alert-info" style="text-align:left"><app-icon nome="pin" /> <span>Leve os itens até <strong>{{ escolhida()!.ongEndereco }}</strong>, {{ d.ongCidade }}/{{ d.ongUf }}.</span></div>
+              }
+              <div class="mt-3" style="text-align:left">
+                <h4>Quer mostrar o que vai doar? <span class="muted small">(opcional)</span></h4>
+                <app-anexos entidadeTipo="DOACAO" [entidadeId]="d.id" titulo="Adicionar foto dos itens" />
+              </div>
+              <div class="row mt-3" style="justify-content:center">
+                <a class="btn" [routerLink]="['/doacoes']" [queryParams]="{ doadorId: d.doadorId }"><app-icon nome="coracao" [tamanho]="16" /> Minhas doações</a>
+                <button class="btn btn-primary" (click)="recomecar()"><app-icon nome="mais" [tamanho]="16" /> Doar mais</button>
+              </div>
+            </div>
+          }
+        }
+      }
+
+      @if (passo() < 5) {
+        <div class="painel-acoes">
+          @if (passo() > 1) {
+            <button class="btn btn-ghost" (click)="irPara(passo() - 1)"><app-icon nome="seta-esq" [tamanho]="16" /> Voltar</button>
+          } @else { <span></span> }
+          @if (passo() < 4) {
+            <button class="btn btn-primary btn-lg" (click)="avancar()"
+                    [disabled]="(passo() === 1 && !passo1Ok()) || (passo() === 2 && !local()) || (passo() === 3 && !escolhida())">
+              Continuar <app-icon nome="seta-dir" [tamanho]="18" />
+            </button>
+          } @else {
+            <button class="btn btn-accent btn-lg" (click)="confirmar()" [disabled]="!passo4Ok() || enviando() || quantidade() < 1">
+              @if (enviando()) { <span class="spinner"></span> } @else { <app-icon nome="coracao" [tamanho]="18" /> }
+              Confirmar doação
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    @if (passo() < 5) {
+      <aside class="resumo">
+        <div class="card resumo-card">
+          <span class="label">Resumo da sua doação</span>
+          <div class="resumo-linha">
+            @if (categoria(); as c) { <app-cat-icon [categoria]="c" [tamanho]="36" /> } @else { <span class="cat-icon" style="width:36px;height:36px"><app-icon nome="caixa" [tamanho]="18" /></span> }
+            <div class="grow">
+              <span class="tiny muted">O quê</span>
+              <div class="strong truncate">{{ descricao() || infoCategoria()?.rotulo || '—' }}</div>
+            </div>
+            @if (quantidade() > 0 && categoria()) { <span class="badge">× {{ quantidade() }}</span> }
+          </div>
+          <div class="resumo-linha">
+            <span class="cat-icon" style="width:36px;height:36px; --c: var(--primary)"><app-icon nome="pin" [tamanho]="18" /></span>
+            <div class="grow"><span class="tiny muted">De onde</span><div class="strong truncate">{{ local()?.rotulo ?? '—' }}</div></div>
+          </div>
+          <div class="resumo-linha">
+            <span class="cat-icon" style="width:36px;height:36px; --c: var(--accent)"><app-icon nome="predio" [tamanho]="18" /></span>
+            <div class="grow"><span class="tiny muted">Para</span><div class="strong truncate">{{ escolhida()?.ongNome ?? '—' }}</div></div>
+            @if (escolhida(); as s) { <span class="badge badge-verde">{{ s.distanciaKm | number: '1.0-1' }} km</span> }
+          </div>
+        </div>
+        <div class="dica">
+          <app-icon nome="brilho" [tamanho]="18" />
+          <p class="small mb-0"><strong>Como escolhemos?</strong> Ordenamos pela distância, mas urgência alta e metas longe de serem atingidas fazem a ONG subir no ranking.</p>
+        </div>
+      </aside>
+    }
+  </div>
+</div>
