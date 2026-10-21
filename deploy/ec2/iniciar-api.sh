@@ -20,7 +20,8 @@ param() {
 DB_URL="$(param /doaperto/db/url)"
 DB_USERNAME="$(param /doaperto/db/username)"
 DB_PASSWORD="$(param /doaperto/db/password)"
-S3_BUCKET="$(param /doaperto/s3/bucket)"
+# Opcional até a Aula 4 (uploads): sem o parâmetro, a API sobe e só os uploads ficam indisponíveis.
+S3_BUCKET="$(param /doaperto/s3/bucket 2>/dev/null || true)"
 
 docker build -t doaperto-api "$RAIZ/backend"
 docker rm -f doaperto-api 2>/dev/null || true
