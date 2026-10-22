@@ -26,7 +26,7 @@ public class OngService {
 
     @Transactional(readOnly = true)
     public List<OngResponse> listar(String termo, String uf) {
-        List<Ong> ongs = repository.buscar(Textos.vazioParaNulo(termo), Textos.ufOuNulo(uf));
+        List<Ong> ongs = repository.buscar(Textos.filtroTexto(termo),Textos.ufOuNulo(uf));
         Map<Long, Long> abertas = necessidades.contarAbertasPorOng();
         return ongs.stream().map(o -> paraResponse(o, abertas.getOrDefault(o.getId(), 0L))).toList();
     }

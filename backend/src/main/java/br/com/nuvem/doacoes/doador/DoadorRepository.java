@@ -13,7 +13,7 @@ public interface DoadorRepository extends JpaRepository<Doador, Long> {
 
     @Query("""
             select d from Doador d
-            where (:termo is null
+            where (:termo = ''
                    or lower(d.nome) like lower(concat('%', :termo, '%'))
                    or lower(d.email) like lower(concat('%', :termo, '%')))
             order by d.nome

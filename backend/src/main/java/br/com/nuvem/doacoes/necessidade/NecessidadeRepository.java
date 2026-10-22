@@ -21,7 +21,7 @@ public interface NecessidadeRepository extends JpaRepository<Necessidade, Long> 
               and (:urgencia is null or n.urgencia = :urgencia)
               and (:status is null or n.status = :status)
               and (:uf is null or o.uf = :uf)
-              and (:termo is null
+              and (:termo = ''
                    or lower(n.titulo) like lower(concat('%', :termo, '%'))
                    or lower(o.nome) like lower(concat('%', :termo, '%')))
             order by n.criadoEm desc
@@ -39,7 +39,7 @@ public interface NecessidadeRepository extends JpaRepository<Necessidade, Long> 
             where n.status = :status
               and n.quantidadeRecebida < n.quantidade
               and (:categoria is null or n.categoria = :categoria)
-              and (:termo is null
+              and (:termo = ''
                    or lower(n.titulo) like lower(concat('%', :termo, '%'))
                    or lower(n.descricao) like lower(concat('%', :termo, '%')))
             """)

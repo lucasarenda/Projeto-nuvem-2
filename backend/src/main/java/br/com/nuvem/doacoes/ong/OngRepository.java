@@ -11,7 +11,7 @@ public interface OngRepository extends JpaRepository<Ong, Long> {
     @Query("""
             select o from Ong o
             where (:uf is null or o.uf = :uf)
-              and (:termo is null
+              and (:termo = ''
                    or lower(o.nome) like lower(concat('%', :termo, '%'))
                    or lower(o.cidade) like lower(concat('%', :termo, '%')))
             order by o.nome

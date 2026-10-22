@@ -28,7 +28,7 @@ public class NecessidadeService {
     public List<NecessidadeResponse> listar(Long ongId, Categoria categoria, Urgencia urgencia, Status status,
                                             String uf, String termo) {
         // Mais urgentes primeiro; dentro da mesma urgência, as mais recentes (a consulta já vem por data).
-        return repository.buscar(ongId, categoria, urgencia, status, Textos.ufOuNulo(uf), Textos.vazioParaNulo(termo))
+        return repository.buscar(ongId, categoria, urgencia, status, Textos.ufOuNulo(uf), Textos.filtroTexto(termo))
                 .stream()
                 .sorted(Comparator.comparing(Necessidade::getUrgencia).reversed())
                 .map(NecessidadeResponse::de)

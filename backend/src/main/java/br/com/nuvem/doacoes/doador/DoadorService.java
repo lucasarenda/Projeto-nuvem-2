@@ -21,7 +21,7 @@ public class DoadorService {
 
     @Transactional(readOnly = true)
     public List<DoadorResponse> listar(String termo) {
-        return repository.buscar(Textos.vazioParaNulo(termo)).stream().map(DoadorResponse::de).toList();
+        return repository.buscar(Textos.filtroTexto(termo)).stream().map(DoadorResponse::de).toList();
     }
 
     @Transactional(readOnly = true)

@@ -48,7 +48,7 @@ public class SugestaoService {
     @Transactional(readOnly = true)
     public List<SugestaoResponse> sugerir(Categoria categoria, double lat, double lng, String termo,
                                           Double raioKm, int limite) {
-        List<Candidata> ranking = necessidades.candidatas(categoria, Textos.vazioParaNulo(termo)).stream()
+        List<Candidata> ranking = necessidades.candidatas(categoria, Textos.filtroTexto(termo)).stream()
                 .map(n -> avaliar(n, lat, lng))
                 .filter(c -> raioKm == null || c.distanciaKm() <= raioKm)
                 .sorted(Comparator.comparingDouble(Candidata::ajustada))
