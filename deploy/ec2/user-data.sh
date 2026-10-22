@@ -4,7 +4,7 @@
 # iniciar-api.sh busca tudo no SSM Parameter Store usando o LabInstanceProfile.
 set -euxo pipefail
 
-REPO_URL="https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git"   # <-- ajuste
+REPO_URL="https://github.com/lucasarenda/Projeto-nuvem-2"   # <-- ajuste
 BRANCH="main"
 
 dnf install -y docker git
