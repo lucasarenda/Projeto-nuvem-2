@@ -14,22 +14,22 @@ Legenda: `[x]` feito e verificado · `[ ]` pendente.
 
 ## Aula 2 — 16/10 · em sala
 
-- [x] `spec.md` revisado com critérios de aceite
-- [x] `design.md`: diagrama de arquitetura, modelo ER e rotas da API
-- [x] ADR do RNF-04 (`docs/adr/0001-crud-em-container-ec2.md`)
-- [ ] Bucket S3 `doaperto-site-<id>` com static website hosting e política pública
-- [ ] Landing page/protótipo publicada e acessível. URL: `____________`
+- [x] `spec.md` revisado com critérios de aceite - Leonardo Buzzoni e Lucas Arenda
+- [x] `design.md`: diagrama de arquitetura, modelo ER e rotas da API - Leonardo Buzzoni e Lucas Arenda
+- [x] ADR do RNF-04 (`docs/adr/0001-crud-em-container-ec2.md`) - Leonardo Buzzoni e Lucas Arenda
+- [x] Bucket S3 `doaperto-site-<id>` com static website hosting e política pública - Lucas Arenda
+- [x] Landing page/protótipo publicada e acessível. URL: `http://doaperto-site-10436971.s3-website-us-east-1.amazonaws.com/` - Lucas Arenda
 
 **Rede**
-- [ ] VPC `doaperto-vpc`: 2 subnets públicas + 2 privadas, sem NAT, com S3 Gateway Endpoint
-- [ ] Security Groups criados: `sg-api` (8080 aberto, 22 só do seu IP), `sg-rds` (5432 só de `sg-api`)
+- [x] VPC `doaperto-vpc`: 2 subnets públicas + 2 privadas, sem NAT, com S3 Gateway Endpoint - Leonardo Buzzoni
+- [x] Security Groups criados: `sg-api` (8080 aberto, 22 só do seu IP), `sg-rds` (5432 só de `sg-api`) - Leonardo Buzzoni
 - [x] Security Groups documentados (`docs/seguranca.md`)
 
 **Banco**
-- [ ] DB subnet group só com as subnets privadas
-- [ ] RDS PostgreSQL privado (`Public access = No`), banco inicial `doaperto`
+- [x] DB subnet group só com as subnets privadas - Leonardo Buzzoni
+- [x] RDS PostgreSQL privado (`Public access = No`), banco inicial `doaperto` - Leonardo Buzzoni
 - [x] Scripts SQL versionados (`backend/src/main/resources/db/migration/V1__schema.sql`, `db/seed/V2__dados_exemplo.sql`)
-- [ ] Parâmetros no SSM: `/doaperto/db/url`, `/doaperto/db/username`, `/doaperto/db/password`
+- [x] Parâmetros no SSM: `/doaperto/db/url`, `/doaperto/db/username`, `/doaperto/db/password` - Leonardo Buzzoni
 
 **CRUD do RF-01 na AWS**
 - [ ] Push do código para o GitHub e URL do repositório no `deploy/ec2/user-data.sh`
