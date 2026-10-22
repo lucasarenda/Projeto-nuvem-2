@@ -14,11 +14,11 @@ Legenda: `[x]` feito e verificado · `[ ]` pendente.
 
 ## Aula 2 — 16/10 · em sala
 
-- [x] `spec.md` revisado com critérios de aceite
-- [x] `design.md`: diagrama de arquitetura, modelo ER e rotas da API
-- [x] ADR do RNF-04 (`docs/adr/0001-crud-em-container-ec2.md`)
-- [ ] Bucket S3 `doaperto-site-<id>` com static website hosting e política pública
-- [ ] Landing page/protótipo publicada e acessível. URL: `____________`
+- [x] `spec.md` revisado com critérios de aceite - Leonardo e Lucas Arenda
+- [x] `design.md`: diagrama de arquitetura, modelo ER e rotas da API - Leonardo e Lucas Arenda
+- [x] ADR do RNF-04 (`docs/adr/0001-crud-em-container-ec2.md`) - Leonardo e Lucas Arenda
+- [ ] Bucket S3 `doaperto-site-<id>` com static website hosting e política pública - Lucas Arenda
+- [ ] Landing page/protótipo publicada e acessível. URL: `____________` - Lucas Arenda
 
 **Rede**
 - [ ] VPC `doaperto-vpc`: 2 subnets públicas + 2 privadas, sem NAT, com S3 Gateway Endpoint
