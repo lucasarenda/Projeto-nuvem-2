@@ -1,4 +1,4 @@
-# spec.md — DoaPerto
+# specs.md — DoaPerto
 
 > Sistema de doação de alimentos e roupas · Projeto Nuvem 1 (tema 9)
 
