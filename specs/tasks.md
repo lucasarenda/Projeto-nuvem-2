@@ -42,16 +42,16 @@ Legenda: `[x]` feito e verificado · `[ ]` pendente.
 ## Aula 3 — 23/10 · entrega por vídeo (até 5 min)
 
 **Entrega**
-- [ ] Gravar o vídeo seguindo `docs/roteiro-video-aula3.md`
-- [ ] Vídeo + link do repositório no Moodle
+- [x] Gravar o vídeo - Grupo
+- [ ] Vídeo + link do repositório no Moodle - Grupo
 
 ## Aula 4 — 30/10 · em sala (fora do escopo desta entrega)
 
-- [ ] Bucket de arquivos privado com CORS e upload por URL pré-assinada (RF-02)
-- [ ] Lambda `doaperto-processar-arquivo` com gatilhos `uploads/` e `importacoes/`, log no CloudWatch (RF-03)
-- [ ] Lambda `doaperto-relatorios` + API Gateway (`/api/{proxy+}` e `/relatorios/{tipo}`) (RF-04)
-- [ ] Front final apontando para o API Gateway (RF-05)
-- [ ] `design.md` conferido com o que está rodando
+- [x] Bucket de arquivos privado com CORS e upload por URL pré-assinada (RF-02) - Lucas Arenda
+- [x] Lambda `doaperto-processar-arquivo` com gatilhos `uploads/` e `importacoes/`, log no CloudWatch (RF-03) - Leonardo Buzzoni
+- [x] Lambda `doaperto-relatorios` + API Gateway (`/api/{proxy+}` e `/relatorios/{tipo}`) (RF-04) - Lucas Arenda
+- [x] Front final apontando para o API Gateway (RF-05) - Lucas Arenda
+- [x] `design.md` conferido com o que está rodando - Leonardo Buzzoni
 
 ## Já pronto no código 
 
