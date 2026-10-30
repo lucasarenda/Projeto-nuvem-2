@@ -1,6 +1,6 @@
 # DoaPerto — doação de alimentos e roupas, pertinho de você
 
-> Projeto **Nuvem 1** · tema 9: *Sistema de doação de alimentos e roupas*.
+> Projeto **Nuvem 1** · *Sistema de doação de alimentos e roupas*.
 
 ONGs publicam o que precisam. O doador conta o que tem para doar. O sistema **sugere a instituição mais próxima
 que precisa daquilo** — ordenando por distância (Haversine) e dando prioridade a necessidades urgentes ou longe da meta.
