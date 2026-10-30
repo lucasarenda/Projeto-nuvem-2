@@ -1,7 +1,7 @@
 # tasks.md — DoaPerto
 
 Legenda: `[x]` feito e verificado · `[ ]` pendente.
-**Escopo desta entrega: até a Aula 3 (23/10).** RF-02, RF-03, RF-04 e o API Gateway ficam para a Aula 4.
+**Entrega atual: Aula 4 (30/10)**, com RF-02, RF-03, RF-04 e o API Gateway.
 
 ## Aula 1 — 09/10 · em sala
 
@@ -45,9 +45,11 @@ Legenda: `[x]` feito e verificado · `[ ]` pendente.
 - [ ] Gravar o vídeo seguindo `docs/roteiro-video-aula3.md`
 - [ ] Vídeo + link do repositório no Moodle
 
-## Aula 4 — 30/10 · em sala (fora do escopo desta entrega)
+## Aula 4 — 30/10 · em sala
 
-- [ ] Bucket de arquivos privado com CORS e upload por URL pré-assinada (RF-02)
+Passo a passo: [`docs/roteiro-aula4.md`](../docs/roteiro-aula4.md).
+
+- [x] Bucket de arquivos privado com CORS e upload por URL pré-assinada (RF-02) - Lucas Arenda
 - [ ] Lambda `doaperto-processar-arquivo` com gatilhos `uploads/` e `importacoes/`, log no CloudWatch (RF-03)
 - [ ] Lambda `doaperto-relatorios` + API Gateway (`/api/{proxy+}` e `/relatorios/{tipo}`) (RF-04)
 - [ ] Front final apontando para o API Gateway (RF-05)

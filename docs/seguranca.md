@@ -37,7 +37,7 @@ Criada pelo assistente **VPC → Create VPC → "VPC and more"**:
 |---|---|---|---|---|
 | `sg-api` | EC2 da API | TCP **8080** de `0.0.0.0/0` | Tudo | O API Gateway HTTP API não tem IP fixo, então a integração chega pela internet. Ver "Riscos" abaixo. |
 | | | TCP **22** de **Meu IP** (opcional) | | Só para manutenção. Prefira *EC2 Instance Connect* ou *Session Manager* e deixe sem SSH. |
-| `sg-lambda` | As duas Lambdas (ENIs na subnet privada) | **Nenhuma** | TCP 5432 → `sg-rds`; TCP 443 → prefix list do S3 (`pl-63a5400a` em us-east-1) | Lambda só inicia conexões. |
+| `sg-lambda` | As duas Lambdas (ENIs na subnet privada) | **Nenhuma** | Tudo (padrão) | Lambda só inicia conexões. A subnet privada não tem NAT, então os únicos destinos alcançáveis são o RDS e o S3 (pelo Gateway Endpoint). |
 | `sg-rds` | RDS PostgreSQL | TCP **5432** de **`sg-api`** e de **`sg-lambda`** (referência a SG, não a IP) | (padrão) | Banco aceita conexões só da API e das Lambdas. |
 
 O RDS foi criado com **Public access = No**, num *DB subnet group* que contém **apenas as subnets privadas**.

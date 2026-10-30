@@ -1,7 +1,7 @@
 # design.md — DoaPerto
 
 > Arquitetura, modelo de dados e rotas. Diagramas modelados com apoio de IA (ver `ia-log.md`) e revisados pela equipe.
-> Decisão CRUD em container × Lambda: [ADR 0001](docs/adr/0001-crud-em-container-ec2.md).
+> Decisão CRUD em container × Lambda: [ADR 0001](../docs/adr/0001-crud-em-container-ec2.md).
 
 ## 1. Arquitetura
 
@@ -36,14 +36,14 @@ flowchart LR
 
 | Componente | Serviço AWS | Responsabilidade |
 |---|---|---|
-| Front-end | S3 static website | SPA Angular 21; lê as URLs da API de `config.json` |
+| Front-end | S3 static website (`doaperto-site-10436971`) | SPA Angular 21; lê as URLs da API de `config.json` |
 | Borda | API Gateway (HTTP API) | `ANY /api/{proxy+}` → EC2 · `GET /relatorios/{tipo}` → Lambda · CORS |
 | API CRUD | EC2 t3.small + Docker | Spring Boot 4.1 (Java 25): CRUD, match, URLs pré-assinadas |
 | Banco | RDS PostgreSQL 17 (privado) | Dados relacionais; schema versionado com Flyway |
-| Arquivos | S3 privado | Fotos, logos, PDFs, CSVs e miniaturas |
+| Arquivos | S3 privado (`doaperto-arquivos-doaperto-arquivos-lucas123`) | Fotos, logos, PDFs, CSVs e miniaturas |
 | Processamento | Lambda Python 3.13 | Miniatura (Pillow), páginas de PDF, importação de CSV |
 | Relatórios | Lambda Python 3.13 | Consultas analíticas com JOIN/GROUP BY |
-| Segredos | SSM Parameter Store | URL, usuário e senha do banco para a EC2 |
+| Segredos | SSM Parameter Store | URL, usuário e senha do banco para a EC2 (as Lambdas usam variáveis de ambiente) |
 
 ### Fluxo de upload (RF-02 → RF-03)
 
@@ -67,7 +67,7 @@ sequenceDiagram
 
 ### Rede
 
-Detalhes de VPC, subnets e Security Groups em [`docs/seguranca.md`](docs/seguranca.md).
+Detalhes de VPC, subnets e Security Groups em [`docs/seguranca.md`](../docs/seguranca.md).
 
 | SG | Entrada | Usado por |
 |---|---|---|

@@ -1,2 +1,5 @@
 pg8000==1.31.5
+# scramp 1.5 removeu make_channel_binding, usado pelo pg8000 no login SCRAM do RDS
+scramp==1.4.18
+python-dateutil==2.9.0.post0
 Pillow==12.2.0
