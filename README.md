@@ -14,6 +14,15 @@ que precisa daquilo** — ordenando por distância (Haversine) e dando prioridad
 | Arquivos | **Amazon S3** com URL pré-assinada |
 | Borda | **API Gateway** HTTP API · S3 static website |
 
+**Repositório:** <https://github.com/lucasarenda/Projeto-nuvem-2>
+
+| Entrega | Onde está |
+|---|---|
+| Código-fonte | `backend/` (API), `frontend/` (Angular), `lambdas/` (funções), `deploy/` (scripts de deploy) |
+| Scripts SQL | `backend/src/main/resources/db/migration/V1__schema.sql` e `db/seed/V2__dados_exemplo.sql` |
+| Especificação | `specs/`: `spec.md`, `design.md`, `tasks.md` e `ia-log.md` (com a reflexão final) |
+| Evidências | [`docs/evidencias/`](docs/evidencias/README.md): prints da aplicação e dos recursos AWS |
+
 ---
 
 ## Sumário
@@ -147,7 +156,7 @@ nuvem-1/
 │   ├── ec2/                 user-data.sh e iniciar-api.sh (lê o SSM)
 │   ├── s3/                  CORS do bucket de arquivos e política do site
 │   └── scripts/             atualizar-integracao.sh, publicar-front.sh
-├── docs/                    ADR, segurança/SGs, CSV de exemplo
+├── docs/                    ADR, segurança/SGs, CSVs de exemplo, roteiros e evidências (prints)
 ├── docker-compose.yml       Postgres + API para desenvolvimento
 └── .github/workflows/ci.yml CI (bônus)
 ```
