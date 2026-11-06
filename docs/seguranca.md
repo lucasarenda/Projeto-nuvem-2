@@ -21,10 +21,10 @@ Criada pelo assistente **VPC → Create VPC → "VPC and more"**:
                     │ HTTP :8080              ▼
  ┌──────────────── VPC 10.0.0.0/16 ───────────────────────────────┐
  │ Subnet pública                     Subnets privadas             │
- │ ┌─────────────┐   5432   ┌──────────────┐   5432  ┌──────────┐ │
- │ │ EC2 + Docker│─────────▶│ RDS Postgres │◀────────│ Lambdas  │ │
- │ │  sg-api     │          │   sg-rds     │         │sg-lambda │ │
- │ └─────────────┘          └──────────────┘         └────┬─────┘ │
+ │ ┌─────────────────┐ 5432 ┌─────────────────┐ 5432 ┌──────────┐ │
+ │ │ EC2 + Docker    │─────▶│  RDS Postgres   │◀─────│ Lambdas  │ │
+ │ │ doaperto-api-sg │      │ doaperto-rds-sg │      │  lambda  │ │
+ │ └─────────────────┘      └─────────────────┘      └────┬─────┘ │
  │                                       S3 Gateway Endpoint│      │
  └──────────────────────────────────────────────────────────┼─────┘
                                                             ▼
@@ -35,10 +35,10 @@ Criada pelo assistente **VPC → Create VPC → "VPC and more"**:
 
 | SG | Anexado a | Entrada (inbound) | Saída (outbound) | Por quê |
 |---|---|---|---|---|
-| `sg-api` | EC2 da API | TCP **8080** de `0.0.0.0/0` | Tudo | O API Gateway HTTP API não tem IP fixo, então a integração chega pela internet. Ver "Riscos" abaixo. |
+| `doaperto-api-sg` | EC2 da API | TCP **8080** de `0.0.0.0/0` | Tudo | O API Gateway HTTP API não tem IP fixo, então a integração chega pela internet. Ver "Riscos" abaixo. |
 | | | TCP **22** de **Meu IP** (opcional) | | Só para manutenção. Prefira *EC2 Instance Connect* ou *Session Manager* e deixe sem SSH. |
-| `sg-lambda` | As duas Lambdas (ENIs na subnet privada) | **Nenhuma** | Tudo (padrão) | Lambda só inicia conexões. A subnet privada não tem NAT, então os únicos destinos alcançáveis são o RDS e o S3 (pelo Gateway Endpoint). |
-| `sg-rds` | RDS PostgreSQL | TCP **5432** de **`sg-api`** e de **`sg-lambda`** (referência a SG, não a IP) | (padrão) | Banco aceita conexões só da API e das Lambdas. |
+| `lambda` | As duas Lambdas (ENIs na subnet privada) | **Nenhuma** | Tudo (padrão) | Lambda só inicia conexões. A subnet privada não tem NAT, então os únicos destinos alcançáveis são o RDS e o S3 (pelo Gateway Endpoint). |
+| `doaperto-rds-sg` | RDS PostgreSQL | TCP **5432** de **`doaperto-api-sg`** e de **`lambda`** (referência a SG, não a IP) | (padrão) | Banco aceita conexões só da API e das Lambdas. |
 
 O RDS foi criado com **Public access = No**, num *DB subnet group* que contém **apenas as subnets privadas**.
 Não há rota da internet até ele, nem com a senha certa (RNF-01).
@@ -47,7 +47,7 @@ Não há rota da internet até ele, nem com a senha certa (RNF-01).
 
 - A porta 8080 da EC2 está aberta para a internet porque a integração HTTP do API Gateway não sai de dentro da VPC.
   Mitigações já aplicadas: a API não guarda segredos em respostas, valida toda entrada e o banco não é alcançável.
-  Evolução recomendada: **VPC Link + ALB interno** (aí `sg-api` aceita só o SG do ALB) ou CloudFront com header secreto.
+  Evolução recomendada: **VPC Link + ALB interno** (aí `doaperto-api-sg` aceita só o SG do ALB) ou CloudFront com header secreto.
 - Os PUTs de upload vão direto ao S3 por URL pré-assinada válida por 10 min; o bucket continua **privado**
   (Block Public Access ligado). As imagens são exibidas por URLs GET pré-assinadas de 60 min.
 

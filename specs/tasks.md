@@ -22,7 +22,7 @@ Legenda: `[x]` feito e verificado · `[ ]` pendente.
 
 **Rede**
 - [x] VPC `doaperto-vpc`: 2 subnets públicas + 2 privadas, sem NAT, com S3 Gateway Endpoint - Leonardo Buzzoni
-- [x] Security Groups criados: `sg-api` (8080 aberto, 22 só do seu IP), `sg-rds` (5432 só de `sg-api`) - Leonardo Buzzoni
+- [x] Security Groups criados: `doaperto-api-sg` (8080 aberto, 22 só do seu IP), `doaperto-rds-sg` (5432 só de `doaperto-api-sg`) - Leonardo Buzzoni
 - [x] Security Groups documentados (`docs/seguranca.md`) - Leonardo Buzzoni
 
 **Banco**

@@ -71,9 +71,9 @@ Detalhes de VPC, subnets e Security Groups em [`docs/seguranca.md`](../docs/segu
 
 | SG | Entrada | Usado por |
 |---|---|---|
-| `sg-api` | 8080 de 0.0.0.0/0 (API Gateway) · 22 só do seu IP (opcional) | EC2 |
-| `sg-lambda` | nenhuma | Lambdas |
-| `sg-rds` | 5432 de `sg-api` e `sg-lambda` | RDS |
+| `doaperto-api-sg` | 8080 de 0.0.0.0/0 (API Gateway) · 22 só do seu IP (opcional) | EC2 |
+| `lambda` | nenhuma | Lambdas |
+| `doaperto-rds-sg` | 5432 de `doaperto-api-sg` e `lambda` | RDS |
 
 ## 2. Modelo de dados (ER)
 

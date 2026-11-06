@@ -50,7 +50,7 @@ Registro de como a IA foi usada: o que foi pedido, o que foi gerado, o que a equ
 - **Erros da IA corrigidos:**
   - informou o bucket de arquivos como `doaperto-arquivos-lucas123`; o nome real, conferido no console, é
     `doaperto-arquivos-doaperto-arquivos-lucas123`;
-  - o roteiro restringia a saída do `sg-lambda`, mas a orientação passou a ser manter o padrão (*All traffic*);
+  - o roteiro restringia a saída do `lambda`, mas a orientação passou a ser manter o padrão (*All traffic*);
   - o build inicial das Lambdas não fixava o `scramp`, e o erro só apareceu na execução real, no CloudWatch.
 - **Verificação feita:** a IA conferiu o conteúdo dos pacotes e a importação do `pg8000` com o `scramp` fixado.
 - **Revisão humana:**

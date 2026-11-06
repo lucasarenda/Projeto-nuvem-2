@@ -1,6 +1,6 @@
 # Roteiro da Aula 4 — RF-02, RF-03, RF-04 e front final
 
-Região **us-east-1**. Já existem: VPC, `sg-api`, `sg-rds`, RDS, parâmetros `/doaperto/db/*`, EC2 com a API e o
+Região **us-east-1**. Já existem: VPC, `doaperto-api-sg`, `doaperto-rds-sg`, RDS, parâmetros `/doaperto/db/*`, EC2 com a API e o
 bucket do site `doaperto-site-10436971`. Hoje criamos o resto, nesta ordem. Cada passo termina com um **✔ teste**:
 só siga quando ele passar.
 
@@ -30,11 +30,11 @@ VPC `doaperto-vpc` → marque as **route tables privadas** → *Full access* →
 
 ## 2. Security Group das Lambdas
 
-1. **EC2 → Security Groups → Create**: nome `sg-lambda`, VPC `doaperto-vpc`.
+1. **EC2 → Security Groups → Create**: nome `lambda`, VPC `doaperto-vpc`.
    - **Inbound:** nenhuma regra.
    - **Outbound:** deixe a regra padrão (*All traffic*). Continua sem internet, porque a subnet privada não tem NAT.
-2. Edite o **`sg-rds`** → *Inbound* → **Add rule**: *PostgreSQL* (5432) → origem `sg-lambda`.
-   A regra que já existe para `sg-api` continua lá.
+2. Edite o **`doaperto-rds-sg`** → *Inbound* → **Add rule**: *PostgreSQL* (5432) → origem `lambda`.
+   A regra que já existe para `doaperto-api-sg` continua lá.
 
 ## 3. Bucket de arquivos (RF-02)
 
@@ -57,7 +57,7 @@ Os pacotes já estão gerados em `lambdas/build/` (se precisar refazer: `bash la
 1. **Lambda → Create function → Author from scratch**
    - Nome `doaperto-processar-arquivo` · Runtime **Python 3.13** · Arquitetura **x86_64**
    - *Change default execution role* → **Use an existing role** → `LabRole`
-   - *Additional configurations* → **Enable VPC** → `doaperto-vpc`, **as 2 subnets privadas**, SG **`sg-lambda`**
+   - *Additional configurations* → **Enable VPC** → `doaperto-vpc`, **as 2 subnets privadas**, SG **`lambda`**
    - Create (leva ~1 min criando as ENIs).
 2. *Code* → **Upload from → .zip file** → `lambdas/build/processar-arquivo.zip` → Save.
    Confira que *Runtime settings → Handler* está `lambda_function.lambda_handler`.
@@ -101,7 +101,7 @@ Igual ao passo 4, com estas diferenças:
 
 - Nome `doaperto-relatorios`, zip `lambdas/build/relatorios.zip`
 - Memória **256 MB**, timeout **15 s**
-- Mesmas variáveis de ambiente, mesma VPC/subnets/`sg-lambda`
+- Mesmas variáveis de ambiente, mesma VPC/subnets/`lambda`
 - **Sem gatilho S3**
 
 ✔ *Test* → evento novo com este JSON → resposta `statusCode: 200` com os números do resumo:
@@ -149,7 +149,7 @@ Sem barra e sem `/api` no final. Abra o site e dê **Ctrl+F5**.
 
 - [ ] `specs/design.md` bate com o que está rodando: nomes dos SGs, bucket, rotas do API Gateway, versões
       (Python 3.13, PostgreSQL 17, t3.small). Ajuste o que divergir.
-- [ ] `docs/seguranca.md`: outbound do `sg-lambda` igual ao que ficou no console.
+- [ ] `docs/seguranca.md`: outbound do `lambda` igual ao que ficou no console.
 - [ ] `specs/tasks.md`: marque os itens da Aula 4 com o nome de quem fez.
 - [ ] Entrada no `specs/ia-log.md` sobre a ajuda da IA na Aula 4.
 - [ ] Commit + push.
@@ -161,7 +161,7 @@ Sem barra e sem `/api` no final. Abra o site e dê **Ctrl+F5**.
 | Sintoma | Causa provável | Onde mexer |
 |---|---|---|
 | Lambda: `Task timed out` antes de qualquer log de banco | Não alcança o S3: endpoint ausente ou não associado à route table privada | Passo 1 |
-| Lambda: `timeout` / `could not connect` no log | `sg-rds` não aceita `sg-lambda`, ou `DB_HOST` errado (com `jdbc:` ou porta) | Passos 2 e 4 |
+| Lambda: `timeout` / `could not connect` no log | `doaperto-rds-sg` não aceita `lambda`, ou `DB_HOST` errado (com `jdbc:` ou porta) | Passos 2 e 4 |
 | Lambda: `password authentication failed` | `DB_USER`/`DB_PASSWORD` diferentes dos do SSM | Passo 4 |
 | Upload: erro de CORS no PUT para `s3.amazonaws.com` | CORS do bucket de arquivos não aplicado | Passo 3 |
 | Upload: `Upload indisponível: variável S3_BUCKET não configurada` | `/doaperto/s3/bucket` não existe ou o container não foi recriado | Passo 3 |

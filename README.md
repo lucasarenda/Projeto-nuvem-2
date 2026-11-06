@@ -206,14 +206,14 @@ Os comandos CLI podem ser rodados no **CloudShell**.
 
 **VPC → Create VPC → VPC and more**: nome `doaperto`, 2 AZs, **2 subnets públicas, 2 privadas**,
 **NAT gateways: None**, **VPC endpoints: S3 Gateway**. Crie os três Security Groups descritos em
-[`docs/seguranca.md`](docs/seguranca.md): `sg-api`, `sg-lambda`, `sg-rds`.
+[`docs/seguranca.md`](docs/seguranca.md): `doaperto-api-sg`, `lambda`, `doaperto-rds-sg`.
 
 ### 2. Banco (RDS PostgreSQL)
 
 1. **RDS → Subnet groups → Create**: `doaperto-db-subnets` com **as duas subnets privadas**.
 2. **Create database**: Standard create · PostgreSQL 17 · template *Free tier/Dev* · `db.t3.micro` · 20 GB gp3.
    - DB identifier `doaperto-db`, master user `doaperto_admin`, senha forte (guarde para o passo 3).
-   - VPC `doaperto-vpc`, subnet group `doaperto-db-subnets`, **Public access: No**, SG **`sg-rds`**.
+   - VPC `doaperto-vpc`, subnet group `doaperto-db-subnets`, **Public access: No**, SG **`doaperto-rds-sg`**.
    - *Additional configuration* → **Initial database name: `doaperto`**. Desligue Performance Insights e Enhanced Monitoring.
 3. Anote o **endpoint** (ex.: `doaperto-db.xxxx.us-east-1.rds.amazonaws.com`).
 
@@ -238,7 +238,7 @@ Mantenha o **Block Public Access ligado**.
 ### 5. API na EC2 (container)
 
 1. **EC2 → Launch instance**: nome `doaperto-api`, **Amazon Linux 2023**, `t3.small`, key pair opcional.
-2. Network: `doaperto-vpc`, **subnet pública**, *Auto-assign public IP: Enable*, SG **`sg-api`**.
+2. Network: `doaperto-vpc`, **subnet pública**, *Auto-assign public IP: Enable*, SG **`doaperto-api-sg`**.
 3. *Advanced details* → **IAM instance profile: `LabInstanceProfile`** → **User data**: cole
    [`deploy/ec2/user-data.sh`](deploy/ec2/user-data.sh) com a URL do seu repositório.
 4. Após ~3 min: `curl http://<DNS_PUBLICO>:8080/actuator/health` → `{"status":"UP"}`.
@@ -263,7 +263,7 @@ Para **cada** função — **Lambda → Create function → Author from scratch*
 | Execution role | *Use an existing role* → **LabRole** | **LabRole** |
 | Código | *Upload from .zip* → `lambdas/build/processar-arquivo.zip` | `lambdas/build/relatorios.zip` |
 | Configuration → General | Memória 512 MB · Timeout 1 min | 256 MB · 15 s |
-| Configuration → VPC | `doaperto-vpc`, **subnets privadas**, SG **`sg-lambda`** | idem |
+| Configuration → VPC | `doaperto-vpc`, **subnets privadas**, SG **`lambda`** | idem |
 | Environment variables | `DB_HOST`=endpoint RDS · `DB_NAME`=doaperto · `DB_USER` · `DB_PASSWORD` | as mesmas |
 
 Gatilho do S3 (**só em `doaperto-processar-arquivo`**): *Add trigger → S3* → bucket `doaperto-arquivos-<id>`,
