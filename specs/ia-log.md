@@ -58,6 +58,30 @@ Registro de como a IA foi usada: o que foi pedido, o que foi gerado, o que a equ
   - os prints do console e o log do CloudWatch mostraram o erro do `scramp` e o nome real do bucket;
   - Novamente revisada toda documentação, também feito alguns ajustes.
 
+## Reflexão final
+
+**Onde a IA ajudou mais**
+- Acelerou a parte repetitiva: estrutura do projeto, CRUD, telas, scripts de deploy e documentação.
+- Explicou conceitos de nuvem que usamos na prática: route tables, Security Groups, S3 Gateway Endpoint, URL
+  pré-assinada, gatilhos de Lambda e o papel do API Gateway.
+- Ajudou a diagnosticar erros a partir de evidências reais: logs do CloudWatch, saída do Docker e prints do console.
+
+**Onde a IA errou ou precisou de correção**
+- Dependências: o pacote da Lambda funcionou no build, mas falhou na AWS porque uma biblioteca (`scramp`) mudou de
+  versão. O erro só apareceu no log do CloudWatch.
+- Nomes de recursos: a IA informou um nome de bucket diferente do real, e só o print do console mostrou o certo.
+- Ambiente: a IA não tinha acesso à conta AWS, então tudo o que ela sugeriu precisou ser executado e conferido pela
+  equipe no console.
+
+**O que aprendemos**
+- Testar localmente não garante que funciona na nuvem: rede, permissões e versões só se confirmam no ambiente real.
+- Logs e prints são a fonte da verdade. O diagnóstico ficou rápido quando mostramos à IA o que estava na tela.
+- Segurança é feita em camadas: subnet privada sem rota para a internet, Security Groups por referência, bucket
+  privado com URL assinada e segredos fora do código.
+- A IA é útil para gerar e explicar, mas a equipe precisa entender cada parte para revisar, corrigir e apresentar.
+
+**Evidências:** prints da aplicação e dos recursos AWS em [`docs/evidencias/`](../docs/evidencias/README.md).
+
 ---
 
 

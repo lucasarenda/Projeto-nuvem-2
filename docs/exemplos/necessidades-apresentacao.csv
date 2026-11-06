@@ -1,0 +1,11 @@
+titulo;categoria;quantidade;unidade;urgencia;descricao
+Macarrão 500 g;alimento;150;pacotes;alta;Para a campanha de cestas básicas
+Óleo de soja 900 ml;alimento;80;garrafas;media;
+Casaco infantil;roupa;45;peças;alta;Tamanhos 4 a 12
+Meias de inverno;roupa;100;pares;media;Tamanhos variados
+Bota de chuva;calcado;25;pares;baixa;Numeração 30 a 38
+Fralda geriátrica;higiene;60;pacotes;alta;Tamanhos M e G
+Manta de microfibra;cobertor;35;unidades;alta;Para o abrigo noturno
+Jogo de tabuleiro;brinquedo;15;unidades;baixa;A partir de 8 anos
+Linha com categoria inválida;esporte;5;unidades;baixa;Erro proposital para mostrar a validação
+Linha com quantidade inválida;alimento;muitos;pacotes;media;Erro proposital para mostrar a validação
