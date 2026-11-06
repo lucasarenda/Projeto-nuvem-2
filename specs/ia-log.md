@@ -61,7 +61,7 @@ Registro de como a IA foi usada: o que foi pedido, o que foi gerado, o que a equ
 ## Reflexão final
 
 **Onde a IA ajudou mais**
-- Acelerou a parte repetitiva: estrutura do projeto, CRUD, telas, scripts de deploy e documentação.
+- Acelerou a parte repetitiva: estrutura do projeto, CRUD, telas e documentação.
 - Explicou conceitos de nuvem que usamos na prática: route tables, Security Groups, S3 Gateway Endpoint, URL
   pré-assinada, gatilhos de Lambda e o papel do API Gateway.
 - Ajudou a diagnosticar erros a partir de evidências reais: logs do CloudWatch, saída do Docker e prints do console.
